@@ -22,6 +22,10 @@ object Main extends App {
 	system.scheduler.scheduleOnce(Duration.create(1300, TimeUnit.MILLISECONDS)) {
 		buton ! Buton.Etaj2
 	}
+
+	system.scheduler.scheduleOnce(Duration.create(3000, TimeUnit.MILLISECONDS)) {
+		buton ! Buton.Etaj2
+	}
 	
 	system.scheduler.scheduleOnce(Duration.create(5000, TimeUnit.MILLISECONDS)) {
 		system.shutdown()

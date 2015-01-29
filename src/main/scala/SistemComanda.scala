@@ -6,27 +6,28 @@ object SistemComanda {
 
 class SistemComanda extends Actor with ActorLogging {
 	val motor = context.actorOf(Props[Motor], "motor")
-	var etajCurent = 0
+	val usa = context.actorOf(Props[Usa], "usa")
 	var denumiri = Array("Parter", "Etaj1", "Etaj2", "Etaj3", "Etaj4", "Etaj5")
+	var etajCurent = 0
 
 	def receive = {
 		case SistemComanda.Comanda(etajDorit) =>
 			if(etajDorit == etajCurent)
-				log.info("Comandă invalidă")
+				log.info("Comandă invalidă - Liftul se află deja la "+ denumiri(etajDorit))
 			if(etajDorit < etajCurent) {
-				log.info("Se închid ușile la etajul " + denumiri(etajCurent))
+				usa ! Usa.Inchide(etajCurent)
 				motor ! Motor.Coboara
 				Thread.sleep(500 * (etajCurent - etajDorit))
 				motor ! Motor.Opreste
-				log.info("Se deschid ușile la etajul " + denumiri(etajDorit))
+				usa ! Usa.Deschide(etajDorit)
 				etajCurent = etajDorit
 			}
 			if(etajDorit > etajCurent) {
-				log.info("Se închid ușile la etajul " + denumiri(etajCurent))
+				usa ! Usa.Inchide(etajCurent)
 				motor ! Motor.Urca
 				Thread.sleep(500 * (etajDorit - etajCurent))
 				motor ! Motor.Opreste
-				log.info("Se deschid ușile la etajul " + denumiri(etajDorit))
+				usa ! Usa.Deschide(etajDorit)
 				etajCurent = etajDorit
 			}
 	}
